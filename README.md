@@ -1,16 +1,24 @@
+# About Me
+
+5년차 데이터 엔지니어로 비즈니스 요구사항을 이해하고 데이터 마트 설계 및 SQL 기반 분석을 수행해왔습니다.  
+현재 데이터 분석가/사이언티스트로 전환을 준비하며, Python과 머신러닝 역량을 키우고 있습니다.
+
+이 포트폴리오는 Kaggle 프로젝트를 통해 **문제 정의 → EDA → 인사이트 도출 → 모델링**까지의 분석 워크플로우를 정리한 것입니다.
+
+
 # Kaggle 데이터 분석 포트폴리오
 
 머신러닝 프로젝트 모음과 주요 성과 지표입니다.
 
 ## 프로젝트 목록
 
-| 프로젝트 | 유형 | 상태 | 최고 점수 | 주요 기법 |
-|---------|------|------|----------|---------|
-| [Titanic](titanic/) | 이진 분류 | 완료 | 77.5% 정확도 | EDA, 특징 공학, Random Forest |
-| [House Price](house-price/) | 회귀 | 완료 | TBD | 특징 선택, 앙상블 |
-| [Disaster Tweets](disaster-tweets/) | NLP 분류 | 완료 | TBD | 텍스트 처리, NLP |
-| [Fashion MNIST](fashion-mnist/) | 이미지 분류 | 완료 | TBD | CNN, 이미지 처리 |
-| [Spaceship Titanic](spaceship-titanic/) | 분류 | 완료 | TBD | 도메인 적응 |
+| 프로젝트                                | 유형        | 상태 | 최고 점수    | 주요 기법                     |
+| --------------------------------------- | ----------- | ---- | ------------ | ----------------------------- |
+| [Titanic](titanic/)                     | 이진 분류   | 완료 | 77.5% 정확도 | EDA, 특징 공학, Random Forest |
+| [House Price](house-price/)             | 회귀        | 완료 | TBD          | 특징 선택, 앙상블             |
+| [Disaster Tweets](disaster-tweets/)     | NLP 분류    | 완료 | TBD          | 텍스트 처리, NLP              |
+| [Fashion MNIST](fashion-mnist/)         | 이미지 분류 | 완료 | TBD          | CNN, 이미지 처리              |
+| [Spaceship Titanic](spaceship-titanic/) | 분류        | 완료 | TBD          | 도메인 적응                   |
 
 ## 개요
 
