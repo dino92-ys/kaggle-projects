@@ -1,0 +1,130 @@
+Disaster Tweets 프로젝트 파이프라인 정리
+
+🔹 프로젝트 파이프라인 요약
+
+1. 데이터 불러오기
+	•	train.csv / test.csv 파일을 pandas.read_csv() 로 불러와서 DataFrame 으로 로드.
+
+⸻
+
+2. EDA (탐색적 데이터 분석)
+	•	dataprep.eda.create_report() 활용 (주석 처리됨).
+	•	주요 칼럼 분석:
+	•	keyword: 221개의 고유 값, 결측치 0.8% 존재.
+	•	location: 3341개의 고유 값, 결측치 33% 존재.
+
+⸻
+
+3. 텍스트 전처리
+	1.	결측치 처리
+	•	keyword: 최빈값(mode()[0])으로 채움.
+	2.	텍스트 정제
+	•	모두 소문자로 변환.
+	•	특수문자/숫자 제거 (str.replace(r'[^a-z ]', '', regex=True)).
+	3.	토큰화 (Tokenization)
+	•	nltk.word_tokenize 사용.
+	4.	불용어 제거 (Stopwords Removal)
+	•	nltk.corpus.stopwords (영어 불용어 목록) 사용.
+	•	불용어 제거 후 단어 리스트 저장.
+	5.	토큰 → 문자열 재결합
+	•	' '.join(tokens) 형태로 저장.
+
+⸻
+
+4. Word2Vec 임베딩 학습
+	•	gensim.models.Word2Vec 활용.
+	•	하이퍼파라미터:
+	•	vector_size=100, window=5, min_count=3.
+	•	학습된 임베딩에서 단어 벡터 및 유사 단어 추출.
+
+⸻
+
+5. 정수 인코딩 & 패딩
+	1.	정수 인코딩
+	•	Word2Vec 단어 사전(embedding_model.wv.index_to_key)으로 word_to_index 생성.
+	•	각 토큰을 숫자로 변환.
+	2.	패딩
+	•	최대 문장 길이(max_len)에 맞춰 뒤쪽을 0으로 채움.
+	•	최종 텐서 형태: (num_samples, max_len).
+
+⸻
+
+6. 데이터 분할
+	•	train_test_split (scikit-learn) 사용.
+	•	Train:Validation = 8:2 비율.
+	•	torch.device('mps') (Mac GPU) 지원 설정.
+
+⸻
+
+7. DataLoader 구축
+	•	Custom Dataset (torch.utils.data.Dataset) 정의.
+	•	DataLoader 로 배치 단위 데이터 생성. (batch_size=64).
+
+⸻
+
+8. LSTM 모델 정의
+	•	torch.nn.Module 기반 LSTMClassifier 클래스 작성.
+	•	구성 요소:
+	•	Embedding Layer: 단어를 벡터로 변환.
+	•	LSTM Layer: 시퀀스 패턴 학습.
+	•	Fully Connected Layer (FC): 이진 분류 출력.
+
+⸻
+
+9. 학습/검증 루프
+	•	손실 함수: nn.BCEWithLogitsLoss() (이진 분류).
+	•	최적화 알고리즘: optim.Adam().
+	•	훈련 루프 (train) + 검증 루프 (evaluate) 구현.
+	•	Epoch 단위로 손실/정확도 출력.
+
+⸻
+
+10. 테스트 데이터 처리 & 예측
+	1.	테스트 데이터 전처리
+	•	Train과 동일한 방식으로 결측치 처리, 토큰화, 불용어 제거, 정수 인코딩, 패딩 수행.
+	2.	DataLoader 구성 (레이블 없음).
+	3.	모델 예측
+	•	torch.sigmoid + torch.round 로 0/1 예측값 생성.
+	4.	제출 파일 생성
+	•	submission.csv 저장 (id, target 컬럼 포함).
+
+⸻
+
+🔹 사용한 주요 라이브러리 & 기능
+
+📊 데이터 처리
+	•	pandas: CSV 파일 로드 및 데이터프레임 처리.
+	•	numpy: 배열 및 수치 연산.
+
+🔍 탐색적 데이터 분석
+	•	dataprep.eda: create_report (EDA 자동 리포트).
+
+📝 텍스트 전처리
+	•	nltk: 토큰화(word_tokenize), 불용어 제거(stopwords).
+	•	정규표현식 (regex): 특수문자/숫자 제거.
+
+🔡 임베딩
+	•	gensim: Word2Vec 모델 학습.
+
+🔢 데이터 준비
+	•	scikit-learn: train_test_split (데이터 분할).
+	•	PyTorch Dataset/DataLoader: 배치 데이터 처리.
+
+🧠 딥러닝 모델
+	•	PyTorch (torch, torch.nn, torch.optim):
+	•	nn.Embedding, nn.LSTM, nn.Linear
+	•	BCEWithLogitsLoss, Adam
+
+💻 디바이스 설정
+	•	Mac GPU (MPS) 지원: torch.device('mps').
+
+⸻
+
+✅ 정리
+
+이 프로젝트는 재난 트윗 분류(binary classification) 문제를 다루며, 전체 파이프라인은 다음과 같이 요약됩니다:
+데이터 로드 → 전처리 → Word2Vec 임베딩 학습 → 정수 인코딩 & 패딩 → 데이터 분할 → DataLoader 구성 → LSTM 모델 정의 → 학습/검증 → 테스트 데이터 예측 → 제출 파일 생성
+
+⸻
+
+혹시 제가 위에 정리한 걸 한눈에 보는 다이어그램(파이프라인 그림) 형태로 만들어드릴까요?
