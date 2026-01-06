@@ -1,81 +1,81 @@
-# Titanic: Machine Learning Survival Prediction
+# 타이타닉: 머신러닝 생존 예측
 
-**Challenge:** Predict passenger survival based on ship records
-**Best Score:** 77.5% (Kaggle Public Score), 79.2% (Cross-Validation)
-**Methodology:** Binary classification with hypothesis-driven feature engineering
-**Model:** Random Forest Classifier (GridSearchCV optimized)
+**과제:** 승객 기록 기반 생존 여부 예측
+**최고 점수:** 77.5% (Kaggle 공개 점수), 79.2% (교차 검증)
+**방법론:** 가설 기반 특징 공학을 활용한 이진 분류
+**모델:** Random Forest 분류기 (GridSearchCV 최적화)
 
-## Key Findings
+## 핵심 발견사항
 
-### Core Insights
+### 주요 인사이트
 
-3 critical survival factors identified:
+생존에 영향을 미치는 3가지 핵심 요인:
 
-| Factor | Impact | Effect Size |
-|--------|--------|------------|
-| **Gender** | Women favored in evacuation | 74% vs 19% survival |
-| **Class** | Passenger class (wealth proxy) | 63% vs 24% (1st vs 3rd) |
-| **Family Size** | 2-4 person families optimal | 56-59% vs 28% (solo) |
+| 요인 | 영향 | 효과 크기 |
+|------|------|----------|
+| **성별** | 여성 우선 대피 | 74% vs 19% 생존율 |
+| **객실 등급** | 승객 등급 (부의 지표) | 63% vs 24% (1등석 vs 3등석) |
+| **가족 규모** | 2-4인 가족이 최적 | 56-59% vs 28% (단독) |
 
-### Business Hypothesis Validation
+### 비즈니스 가설 검증
 
-- "Women and children first" principle confirmed (74% vs 19% survival rate)
-- Social class determined lifeboat access (1st class: 63%, 3rd class: 24%)
-- Family groups had communication/coordination advantage
-- Age as sole predictor insufficient (nuanced by other factors)
+- "여성과 어린이 우선" 원칙 확인됨 (74% vs 19% 생존율)
+- 사회적 계층이 구명보트 접근성 결정 (1등석: 63%, 3등석: 24%)
+- 가족 그룹이 의사소통/협력에서 우위
+- 나이 단독으로는 예측력 부족 (다른 요인에 의해 조절됨)
 
 ---
 
-## Analysis Pipeline
+## 분석 파이프라인
 
-### 0. Problem Definition
+### 0. 문제 정의
 
-- **Objective:** Binary classification (survived/died)
-- **Dataset:** 891 train samples, 418 test samples
-- **Evaluation:** Accuracy metric
-- **Approach:** Hypothesis-driven EDA → Feature Engineering → Model Selection
+- **목표:** 이진 분류 (생존/사망)
+- **데이터셋:** 훈련 샘플 891개, 테스트 샘플 418개
+- **평가 지표:** 정확도
+- **접근 방식:** 가설 기반 EDA → 특징 공학 → 모델 선택
 
-### 1. Data Exploration Highlights
+### 1. 데이터 탐색 주요 내용
 
-**Dataset characteristics:**
-- 12 features (mix of numerical, categorical, missing values)
-- Target distribution: 38% survived, 62% died (imbalanced)
-- Key finding: Gender and class explain majority of variance
+**데이터셋 특성:**
+- 12개 특징 (수치형, 범주형, 결측값 혼합)
+- 목표 변수 분포: 38% 생존, 62% 사망 (불균형)
+- 핵심 발견: 성별과 등급이 대부분의 분산 설명
 
-**Feature observations:**
-- Age: 20% missing (handled via Pclass+Sex stratified imputation)
-- Fare: 1 missing value (median imputation)
-- Cabin: 77% missing (excluded from analysis)
+**특징 관찰:**
+- 나이: 20% 결측 (Pclass+Sex 계층화 대체 처리)
+- 요금: 1개 결측 (중앙값 대체)
+- 객실: 77% 결측 (분석에서 제외)
 
-### 2. Feature Engineering Strategy
+### 2. 특징 공학 전략
 
-**Rationale-driven features created:**
+**근거 기반으로 생성된 특징:**
 
-| New Feature | Source | Logic | Impact |
-|------------|--------|-------|--------|
-| `FamilySize` | SibSp + Parch + 1 | Family unit effectiveness | Moderate |
-| `IsAlone` | FamilySize == 1 | Solo traveler disadvantage | Moderate |
-| `FamilyCategory` | Size buckets (0/1/2) | Optimal 2-4 person range | Moderate |
-| `IsChild` | Age <= 12 | Children-first evacuation | Low-Moderate |
-| `Sex_encoded` | Binary (male=0, female=1) | Survival priority signal | Very High |
+| 새 특징 | 원본 | 논리 | 영향 |
+|---------|------|------|------|
+| `FamilySize` | SibSp + Parch + 1 | 가족 단위 효과성 | 중간 |
+| `IsAlone` | FamilySize == 1 | 단독 여행자 불리 | 중간 |
+| `FamilyCategory` | 크기 구간 (0/1/2) | 최적 2-4인 범위 | 중간 |
+| `IsChild` | Age <= 12 | 어린이 우선 대피 | 낮음-중간 |
+| `Sex_encoded` | 이진 (남성=0, 여성=1) | 생존 우선순위 신호 | 매우 높음 |
 
-**Key decision:** Created features to capture EDA-identified patterns rather than purely statistical approaches.
+**핵심 결정:** 순수 통계적 접근보다 EDA에서 식별된 패턴을 포착하는 특징 생성
 
-### 3. Model Selection & Results
+### 3. 모델 선택 및 결과
 
-**Candidate models tested (5-Fold CV):**
-- Logistic Regression: ~77-78% baseline
-- Random Forest: 79.2% optimal
+**테스트된 후보 모델 (5-Fold CV):**
+- 로지스틱 회귀: ~77-78% 기준선
+- Random Forest: 79.2% 최적
 
-**Tuning approach:**
-- Grid search over: n_estimators [50, 100, 200], max_depth [3, 5, 7, None], min_samples_split [2, 5, 10]
-- 36 parameter combinations tested
-- Final CV: 79.2% accuracy
+**튜닝 접근 방식:**
+- 그리드 탐색 범위: n_estimators [50, 100, 200], max_depth [3, 5, 7, None], min_samples_split [2, 5, 10]
+- 36개 파라미터 조합 테스트
+- 최종 CV: 79.2% 정확도
 
-### 4. Feature Importance Ranking
+### 4. 특징 중요도 순위
 
 ```
-Sex_encoded      [████████████ ] 0.42 (Most important)
+Sex_encoded      [████████████ ] 0.42 (가장 중요)
 Pclass           [██████████   ] 0.35
 Age_filled       [████         ] 0.12
 Fare             [██           ] 0.05
@@ -85,192 +85,192 @@ FamilyCategory   [·            ] 0.01
 IsChild          [·            ] <0.01
 ```
 
-**Interpretation:**
-- Gender and class dominance expected (historical records)
-- Age/Fare secondary factors (proxy for class position)
-- Family engineering features add minimal predictive power but improve interpretability
+**해석:**
+- 성별과 등급 우세 예상됨 (역사적 기록)
+- 나이/요금은 2차 요인 (등급 위치의 대리 변수)
+- 가족 공학 특징은 예측력 추가는 적지만 해석 가능성 향상
 
 ---
 
-## Detailed Findings
+## 상세 발견사항
 
-### Finding 1: Gender as Primary Predictor
+### 발견 1: 성별이 주요 예측 변수
 
-**Pattern:** Overwhelming gender bias in evacuation protocol
+**패턴:** 대피 프로토콜에서 압도적인 성별 편향
 
-**Evidence:**
+**증거:**
 ```
-Survival by Gender:
-Female:  233 survived / 314 total = 74.2%
-Male:    109 survived / 577 total = 18.9%
-Ratio:   ~4.0x difference
+성별별 생존율:
+여성:  233명 생존 / 314명 = 74.2%
+남성:  109명 생존 / 577명 = 18.9%
+비율:  ~4.0배 차이
 ```
 
-**Interpretation:**
-- "Women and children first" protocol was actively enforced
-- All passenger classes show same gender pattern
-- No confounding by age (pattern holds across all age groups)
+**해석:**
+- "여성과 어린이 우선" 프로토콜이 적극적으로 시행됨
+- 모든 승객 등급에서 동일한 성별 패턴
+- 나이에 의한 교란 없음 (모든 연령대에서 패턴 유지)
 
 ---
 
-### Finding 2: Class Hierarchy in Access
+### 발견 2: 접근성의 계층 구조
 
-**Pattern:** Passenger class directly correlates with survival
+**패턴:** 승객 등급이 생존율과 직접 상관
 
-**Evidence:**
+**증거:**
 ```
-Survival by Class:
-1st Class: 136/216 = 62.9%
-2nd Class:  87/184 = 47.3%
-3rd Class: 119/491 = 24.2%
-```
-
-**Deep insight:** Class + Gender interaction strongest
-```
-1st Class Women:  ~91% survival
-1st Class Men:    ~37% survival
-3rd Class Women:  ~46% survival
-3rd Class Men:    ~14% survival
+등급별 생존율:
+1등석: 136/216 = 62.9%
+2등석:  87/184 = 47.3%
+3등석: 119/491 = 24.2%
 ```
 
-**Interpretation:**
-- Physical access to lifeboats determined by cabin location
-- Women's advantage reduced in 3rd class (fewer lifeboats accessible)
-- 1st class men survived better than 3rd class women (resource access > gender)
+**심층 인사이트:** 등급 + 성별 상호작용이 가장 강함
+```
+1등석 여성:  ~91% 생존
+1등석 남성:  ~37% 생존
+3등석 여성:  ~46% 생존
+3등석 남성:  ~14% 생존
+```
+
+**해석:**
+- 구명보트 접근성이 객실 위치에 의해 결정됨
+- 3등석에서 여성 우위 감소 (접근 가능한 구명보트 적음)
+- 1등석 남성이 3등석 여성보다 높은 생존율 (자원 접근성 > 성별)
 
 ---
 
-### Finding 3: Family Size as Proxy for Resources
+### 발견 3: 가족 규모가 자원의 대리 변수
 
-**Pattern:** Optimal family size range improves survival
+**패턴:** 최적 가족 규모 범위가 생존 향상
 
-**Evidence:**
+**증거:**
 ```
-Survival by Family Size:
-Solo (1):        150/537 = 27.9%
-Pair (2):         91/161 = 56.5%
-Small (3-4):      88/148 = 59.5%
-Large (5+):       13/108 = 12.0%
+가족 규모별 생존율:
+단독 (1):       150/537 = 27.9%
+2인 (2):         91/161 = 56.5%
+소가족 (3-4):    88/148 = 59.5%
+대가족 (5+):     13/108 = 12.0%
 ```
 
-**Interpretation:**
-- Solo travelers: Disadvantaged (no coordination, less support)
-- Small families: Optimal (could help each other, navigate together)
-- Large families: Lowest survival (separated/overwhelmed in chaos)
+**해석:**
+- 단독 여행자: 불리 (협력 없음, 지원 부족)
+- 소가족: 최적 (서로 도움, 함께 이동)
+- 대가족: 가장 낮은 생존율 (혼란 속에서 분리/압도됨)
 
 ---
 
-### Finding 4: Age Pattern (Nuanced)
+### 발견 4: 나이 패턴 (미묘함)
 
-**Pattern:** Children prioritized but age less predictive alone
+**패턴:** 어린이 우선이지만 나이 단독으로는 예측력 낮음
 
-**Evidence:**
+**증거:**
 ```
-Survival by Age Group:
-Children (0-12):      ~59% survival
-Young Adults (19-35): ~41% survival
-Middle Age (36-60):   ~31% survival
-Seniors (60+):        ~22% survival
+연령대별 생존율:
+어린이 (0-12):     ~59% 생존
+청년 (19-35):      ~41% 생존
+중년 (36-60):      ~31% 생존
+노년 (60+):        ~22% 생존
 ```
 
-**Interpretation:**
-- Children show ~20% survival advantage over adults
-- But advantage concentrated in 1st/2nd class (had access)
-- Age less important than gender/class (likely mediated through them)
+**해석:**
+- 어린이가 성인보다 ~20% 생존 우위
+- 그러나 우위는 1등석/2등석에 집중 (접근성 보유)
+- 나이는 성별/등급보다 덜 중요 (그것들을 통해 매개될 가능성)
 
 ---
 
-## Implementation Notes
+## 구현 노트
 
-### Data Preprocessing Strategy
+### 데이터 전처리 전략
 
-**Age imputation approach:**
-- Problem: 20% missing age values
-- Solution: Stratified imputation by Pclass + Sex (not simple median)
-- Rationale: 1st class and 3rd class passengers had different age distributions
-- Result: Better age estimates for feature engineering
+**나이 대체 접근 방식:**
+- 문제: 20% 나이 값 결측
+- 해결: Pclass + Sex로 계층화 대체 (단순 중앙값 아님)
+- 근거: 1등석과 3등석 승객의 나이 분포가 다름
+- 결과: 특징 공학을 위한 더 나은 나이 추정
 
-**Why this matters:** Simple imputation could introduce bias; stratified approach respects underlying data structure.
+**중요한 이유:** 단순 대체는 편향을 유발할 수 있음; 계층화 접근은 기본 데이터 구조를 존중
 
-### Cross-Validation Approach
+### 교차 검증 접근 방식
 
-- 5-Fold stratified CV (respects class imbalance)
-- All feature engineering happens within CV loop (avoids data leakage)
-- Reported metrics: Mean ± Std across folds
+- 5-Fold 계층화 CV (클래스 불균형 존중)
+- 모든 특징 공학이 CV 루프 내에서 수행 (데이터 누출 방지)
+- 보고된 지표: 폴드 전체의 평균 ± 표준편차
 
-### Hyperparameter Tuning
+### 하이퍼파라미터 튜닝
 
-- Grid search scope: 36 parameter combinations tested
-- Selection criterion: CV accuracy (balanced with generalization)
-- Best model used for final submission
-
----
-
-## Results Summary
-
-| Metric | Train CV | Kaggle Public | Notes |
-|--------|----------|---------------|-------|
-| Accuracy | 79.2% | 77.5% | Strong generalization |
-| Model | Random Forest (tuned) | - | 200 trees, depth=5 |
-| Features | 8 engineered features | - | Focus on interpretability |
-
-### Key Takeaways
-
-1. **EDA-Driven Features Trump Black-Box Approaches**
-   - Hand-crafted features based on insights (FamilySize, IsAlone) are interpretable
-   - Feature engineering phase was most valuable (revealed patterns)
-
-2. **Ensemble Methods Outperform Linear**
-   - Random Forest 79.2% vs Logistic Regression 77.8%
-   - Captures non-linear interactions (especially Pclass × Sex)
-
-3. **Simple Model Performs Better Than Expected**
-   - Only 8 features needed for 77.5% accuracy
-   - Demonstrates that domain insight > feature count
-
-### Lessons Learned
-
-- **Start with EDA:** Majority of predictive power comes from understanding 3 key factors (gender, class, family)
-- **Validate assumptions:** Historical "women and children first" confirmed by data
-- **Feature engineering:** Interpreting domain knowledge beats complex feature selection
-- **Don't over-engineer:** Adding too many features decreased CV performance
+- 그리드 탐색 범위: 36개 파라미터 조합 테스트
+- 선택 기준: CV 정확도 (일반화와 균형)
+- 최종 제출에 최적 모델 사용
 
 ---
 
-## File Structure
+## 결과 요약
+
+| 지표 | 훈련 CV | Kaggle 공개 | 비고 |
+|------|---------|-------------|------|
+| 정확도 | 79.2% | 77.5% | 강한 일반화 |
+| 모델 | Random Forest (튜닝됨) | - | 200 트리, depth=5 |
+| 특징 | 8개 공학 특징 | - | 해석 가능성 중점 |
+
+### 핵심 교훈
+
+1. **EDA 기반 특징이 블랙박스 접근을 능가**
+   - 인사이트 기반 수작업 특징 (FamilySize, IsAlone)이 해석 가능
+   - 특징 공학 단계가 가장 가치있음 (패턴 발견)
+
+2. **앙상블 방법이 선형보다 우수**
+   - Random Forest 79.2% vs 로지스틱 회귀 77.8%
+   - 비선형 상호작용 포착 (특히 Pclass × Sex)
+
+3. **단순 모델이 예상보다 좋은 성능**
+   - 77.5% 정확도에 8개 특징만 필요
+   - 도메인 인사이트 > 특징 개수 입증
+
+### 배운 점
+
+- **EDA로 시작:** 예측력의 대부분이 3가지 핵심 요인 이해에서 옴 (성별, 등급, 가족)
+- **가정 검증:** 역사적 "여성과 어린이 우선"이 데이터로 확인됨
+- **특징 공학:** 도메인 지식 해석이 복잡한 특징 선택을 능가
+- **과도한 공학 지양:** 너무 많은 특징 추가가 CV 성능 저하
+
+---
+
+## 파일 구조
 
 ```
 titanic/
-├── README.md (this file)
-├── titanic_portfolio.ipynb (full analysis notebook)
+├── README.md (현재 파일)
+├── titanic_portfolio.ipynb (전체 분석 노트북)
 ├── data/
 │   ├── train.csv
 │   └── test.csv
-└── submission.csv (results)
+└── submission.csv (결과)
 ```
 
-## Notebook Organization
+## 노트북 구성
 
-The analysis notebook is organized in 8 sections:
+분석 노트북은 8개 섹션으로 구성:
 
-1. Problem Definition & Hypothesis
-2. Data Loading & Overview
-3. Exploratory Data Analysis
-4. Data Preprocessing
-5. Feature Engineering
-6. Model Selection & Training
-7. Hyperparameter Tuning
-8. Results & Submission
+1. 문제 정의 및 가설
+2. 데이터 로딩 및 개요
+3. 탐색적 데이터 분석
+4. 데이터 전처리
+5. 특징 공학
+6. 모델 선택 및 훈련
+7. 하이퍼파라미터 튜닝
+8. 결과 및 제출
 
-## How to Use This Analysis
+## 이 분석 활용 방법
 
-**For Portfolio Review:** Start with this README for insights, skim the Key Findings section
+**포트폴리오 검토용:** 이 README로 인사이트 시작, 핵심 발견사항 섹션 훑어보기
 
-**For Technical Details:** See the [notebook](titanic_portfolio.ipynb) (well-commented, follows pipeline structure)
+**기술적 세부사항:** [노트북](titanic_portfolio.ipynb) 참조 (주석 충분, 파이프라인 구조 따름)
 
-**For Reproducibility:** All data preprocessing and feature engineering code in notebook (can be re-run)
+**재현성:** 모든 데이터 전처리 및 특징 공학 코드가 노트북에 있음 (재실행 가능)
 
 ---
 
-**Status:** Complete - Kaggle Submission Made
-**Last Updated:** 2026-01-06
+**상태:** 완료 - Kaggle 제출 완료
+**최종 업데이트:** 2026-01-06
