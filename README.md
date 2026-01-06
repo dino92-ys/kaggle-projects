@@ -10,7 +10,7 @@
 | [House Price](house-price/) | 회귀 | 완료 | TBD | 특징 선택, 앙상블 |
 | [Disaster Tweets](disaster-tweets/) | NLP 분류 | 완료 | TBD | 텍스트 처리, NLP |
 | [Fashion MNIST](fashion-mnist/) | 이미지 분류 | 완료 | TBD | CNN, 이미지 처리 |
-| [Spaceship Titanic](spaceship-titanic/) | 분류 | 진행중 | TBD | 도메인 적응 |
+| [Spaceship Titanic](spaceship-titanic/) | 분류 | 완료 | TBD | 도메인 적응 |
 
 ## 개요
 
