@@ -15,10 +15,10 @@
 | 프로젝트                                | 유형        | 상태 | 최고 점수    | 주요 기법                     |
 | --------------------------------------- | ----------- | ---- | ------------ | ----------------------------- |
 | [Titanic](titanic/)                     | 이진 분류   | 완료 | 77.5% 정확도 | EDA, 특징 공학, Random Forest |
-| [House Price](house-price/)             | 회귀        | 완료 | TBD          | 특징 선택, 앙상블             |
-| [Disaster Tweets](disaster-tweets/)     | NLP 분류    | 완료 | TBD          | 텍스트 처리, NLP              |
-| [Fashion MNIST](fashion-mnist/)         | 이미지 분류 | 완료 | TBD          | CNN, 이미지 처리              |
-| [Spaceship Titanic](spaceship-titanic/) | 분류        | 완료 | TBD          | 도메인 적응                   |
+| [House Price](house-price/)             | 회귀        | 완료 | RMSE 0.13    | 특징 선택, 앙상블             |
+| [Disaster Tweets](disaster-tweets/)     | NLP 분류    | 완료 | 88.8% 정확도 | 텍스트 처리, NLP              |
+| [Fashion MNIST](fashion-mnist/)         | 이미지 분류 | 완료 | 92% 정확도   | CNN, 이미지 처리              |
+| [Spaceship Titanic](spaceship-titanic/) | 분류        | 완료 | 80% 정확도   | 도메인 적응                   |
 
 ## 개요
 
