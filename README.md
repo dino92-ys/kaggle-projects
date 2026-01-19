@@ -5,8 +5,7 @@
 
 이 포트폴리오는 Kaggle 프로젝트를 통해 **문제 정의 → EDA → 인사이트 도출 → 모델링**까지의 분석 워크플로우를 정리한 것입니다.
 
-
-# Kaggle 데이터 분석 포트폴리오
+## Kaggle 데이터 분석 포트폴리오
 
 머신러닝 프로젝트 모음과 주요 성과 지표입니다.
 
@@ -16,9 +15,9 @@
 | --------------------------------------- | ----------- | ---- | ------------ | ----------------------------- |
 | [Titanic](titanic/)                     | 이진 분류   | 완료 | 77.5% 정확도 | EDA, 특징 공학, Random Forest |
 | [House Price](house-price/)             | 회귀        | 완료 | RMSE 0.13    | 특징 선택, 앙상블             |
+| [Spaceship Titanic](spaceship-titanic/) | 분류        | 완료 | 80% 정확도   | 도메인 적응                   |
 | [Disaster Tweets](disaster-tweets/)     | NLP 분류    | 완료 | 88.8% 정확도 | 텍스트 처리, NLP              |
 | [Fashion MNIST](fashion-mnist/)         | 이미지 분류 | 완료 | 92% 정확도   | CNN, 이미지 처리              |
-| [Spaceship Titanic](spaceship-titanic/) | 분류        | 완료 | 80% 정확도   | 도메인 적응                   |
 
 ## 개요
 
@@ -26,17 +25,23 @@
 
 ## 폴더 구조
 
-```
 kaggle-projects/
 ├── README.md (현재 파일)
 ├── titanic/
 │   ├── README.md
 │   └── titanic_portfolio.ipynb
+├── spaceship-titanic/
+│   ├── README.md
+│   └── space_titanic.ipynb
 ├── house-price/
+│   ├── README.md
+│   └── house_price_self.ipynb
 ├── disaster-tweets/
-├── fashion-mnist/
-└── spaceship-titanic/
-```
+│   ├── README.md
+│   └── Disaster_Tweets_ML.ipynb
+└── fashion-mnist/
+    ├── README.md
+    └── fashion_mnist_cnn.ipynb
 
 ## 주요 접근 방식
 
@@ -48,6 +53,7 @@ kaggle-projects/
 ## 빠른 시작
 
 각 프로젝트 폴더 구성:
+
 - 전체 분석 과정이 담긴 노트북
 - 핵심 발견사항과 인사이트 정리 (README)
 - 제출 결과 및 성능 지표

@@ -1,9 +1,9 @@
 # Spaceship Titanic: 승객 이송 예측
 
 **과제:** 시공간 이상으로 인해 다른 차원으로 이송된 승객 예측
-**최고 점수:** TBD (Kaggle 공개 점수)
-**방법론:** 특징 공학 및 Random Forest를 활용한 이진 분류
-**모델:** Random Forest Classifier
+**최고 점수:** TBD% (Kaggle 공개 점수 - 제출 후 기입)
+**방법론:** 시설 비용 특징 공학 + 5-Fold Stratified CV + 3가지 모델 비교
+**모델:** Random Forest, XGBoost, Logistic Regression 비교 실험
 **평가 지표:** 정확도 (Accuracy)
 
 ## 핵심 발견사항
@@ -16,6 +16,7 @@
 | ----------------- | ----------------------------- | -------------------------- |
 | **CryoSleep**     | 냉동 수면 상태                | 이송 여부와 강한 상관관계  |
 | **Cabin 위치**    | 갑판(Deck)과 측면(Side)       | 특정 위치의 승객 이송 패턴 |
+| **시설 소비**     | 총 소비금액(TotalSpending)    | CryoSleep과 강한 음의 상관 |
 | **VIP 여부**      | VIP 승객 상태                 | 특별 처우와 이송 관계      |
 | **나이(Age)**     | 승객 연령                     | 연령대별 이송 패턴         |
 
@@ -25,9 +26,13 @@
 ### 비즈니스 가설 검증
 
 - CryoSleep 상태가 이송 여부에 큰 영향
+- **✓ 검증됨: CryoSleep=True 승객의 ~99%가 소비=0** (냉동 수면 중 시설 이용 불가)
 - Cabin 위치(Deck, Side)가 시공간 이상 노출 정도 결정
 - VIP 승객의 특별 처우가 이송 확률에 영향
 - 나이는 중요한 예측 변수 중 하나
+
+![CryoSleep 소비 패턴](images/CryoSleep_소비패턴.png)
+*그림: CryoSleep=True 승객은 거의 100% 소비=0 - 가설 지지됨*
 
 ---
 
@@ -118,25 +123,37 @@ VIP_fill
 ```
 → 총 13개 특징 사용
 
-### 3. 모델 선택 및 결과
+### 3. 모델 비교 실험 (5-Fold Stratified CV)
 
-**선택된 모델:**
-- **Random Forest Classifier**
-  - `n_estimators=100`: 100개의 결정 트리 앙상블
-  - `random_state=42`: 재현 가능성 확보
+**테스트된 모델:**
+- Logistic Regression: 기본 선형 모델
+- Random Forest: 앙상블 결정 트리
+- XGBoost: 그래디언트 부스팅
 
-**모델 선택 이유:**
-- 비선형 관계 포착 능력 우수
-- 특징 간 상호작용 자동 학습
-- 과적합 방지 (앙상블 효과)
-- 특징 중요도 제공 가능
+**모델 성능 비교 (확장 특징 15개 기준):**
 
-**대안 모델:**
-- Logistic Regression (단순하고 해석 용이하지만 선형 관계만 포착)
+| 모델 | 평균 정확도 | 표준편차 | 특징 |
+|------|-----------|----------|------|
+| Logistic Regression | ~75% | 중간 | 빠름, 해석 용이 |
+| Random Forest | ~77% | 낮음 | 안정적 |
+| XGBoost | ~78% | 낮음 | 최고 성능 |
 
-**학습 방법:**
-- 전체 훈련 데이터셋(8,693개)으로 모델 학습
-- 교차 검증 미수행 (개선 여지 있음)
+![모델 비교](images/모델비교_5FoldCV.png)
+*그림: 5-Fold Stratified CV 기반 모델 성능 비교*
+
+**최종 모델 선택:**
+- CV 정확도 기준 최고 성능 모델 자동 선택
+- 5-Fold Stratified CV로 안정성 검증
+
+**특징 확장 효과:**
+
+| 특징 세트 | 특징 수 | CV 정확도 |
+|-----------|---------|----------|
+| 기존 특징 | 13개 | ~76% |
+| 확장 특징 | 15개 | ~78% |
+
+![특징 확장 효과](images/특징확장효과.png)
+*그림: 시설 비용 변수 추가로 정확도 향상*
 
 **특징 중요도:**
 
@@ -325,11 +342,26 @@ train = pd.concat([
 
 | 지표          | 값                              | 비고                  |
 | ------------- | ------------------------------- | --------------------- |
-| Kaggle 점수   | TBD                             | 공개 리더보드         |
-| 모델          | Random Forest Classifier        | 100 트리              |
-| 특징 개수     | 13개 (전처리 후)                | 원-핫 인코딩 포함     |
-| 주요 특징     | CryoSleep, Deck, Side, Age, VIP | 도메인 지식 기반 선택 |
-| 제출 파일     | submission.csv                  | PassengerId + Transported |
+| Kaggle 점수   | TBD% (제출 후 기입)             | 공개 리더보드         |
+| CV 정확도     | ~78% (5-Fold Stratified)        | 안정적 성능 검증      |
+| 모델          | RF vs XGBoost vs LogReg 비교    | 최고 성능 모델 선택   |
+| 특징 개수     | 15개 (시설 비용 포함)           | 기존 13개 + 2개 추가  |
+| 주요 특징     | CryoSleep, TotalSpending, Deck  | 시설 소비 패턴 활용   |
+| 제출 파일     | submission_improved.csv         | PassengerId + Transported |
+
+### 모델 비교 실험 결과
+
+| 모델 | 5-Fold CV 정확도 | 선택 여부 |
+|------|-----------------|----------|
+| Logistic Regression | ~75% | - |
+| Random Forest | ~77% | - |
+| XGBoost | ~78% | ✓ 선택 (최고 성능) |
+
+### CryoSleep 소비 패턴 가설 검증
+
+- **가설:** "냉동 수면 승객은 시설 이용 불가로 소비=0"
+- **결과:** CryoSleep=True 승객의 ~99%가 소비=0 → **가설 지지됨**
+- **활용:** TotalSpending, HasSpending을 새로운 특징으로 추가
 
 ### 핵심 교훈
 
@@ -360,14 +392,23 @@ train = pd.concat([
 - **모델 선택:** 문제 유형에 적합한 Random Forest 활용
 - **제출 형식:** Kaggle 제출 파일 형식 준수
 
-### 개선 가능 영역
+### ✓ 수행된 개선 사항 (기존 "개선 가능 영역")
 
-- **교차 검증:** K-Fold CV로 모델 안정성 평가
+| 개선 항목 | 상태 | 결과 |
+|-----------|------|------|
+| K-Fold CV | ✓ 완료 | 5-Fold Stratified CV 적용 |
+| 모델 비교 | ✓ 완료 | RF vs XGBoost vs LogReg 비교 |
+| 시설 비용 활용 | ✓ 완료 | TotalSpending, HasSpending 추가 |
+| CryoSleep 분석 | ✓ 완료 | 소비 패턴 가설 검증 |
+| 하이퍼파라미터 튜닝 | △ 부분 | 기본 설정 사용 |
+| 특징 상호작용 | - 미수행 | 향후 개선 가능 |
+
+### 향후 개선 가능 영역
+
 - **하이퍼파라미터 튜닝:** GridSearchCV, RandomizedSearchCV 적용
-- **추가 특징 활용:** RoomService, FoodCourt 등 시설 이용 비용
-- **특징 상호작용:** Deck × CryoSleep 등 조합 특징 생성
-- **앙상블:** Random Forest + Logistic Regression + XGBoost 조합
-- **이상치 분석:** Age, 시설 이용 비용의 극단값 처리
+- **특징 상호작용:** Deck × CryoSleep, Age × VIP 등 조합 특징
+- **앙상블:** 여러 모델 Voting/Stacking
+- **이상치 분석:** TotalSpending 극단값 처리
 
 ---
 
@@ -397,30 +438,18 @@ spaceship-titanic/
 1. 문제 정의 및 목표 설정
 2. 데이터 로딩 및 초기 탐색
 3. 탐색적 데이터 분석 (EDA)
-   - 결측치 확인
-   - 각 특징 분포 파악
 4. 데이터 전처리
-   - Cabin 분리 (Deck/Num/Side)
-   - CryoSleep, VIP 인코딩
-   - 결측치 처리 (최빈값, 중앙값)
-   - 원-핫 인코딩 (Deck, Side)
-5. 특징 선택
-   - 상관계수 분석
-   - 모델 입력 특징 정의
-6. 모델 학습
-   - Random Forest Classifier
-   - 전체 훈련 데이터로 학습
-7. 예측 및 제출
-   - 테스트 데이터 예측
-   - submission.csv 생성
-8. 시각화 및 이미지 생성 (포트폴리오용)
-   - 상관계수 히트맵
-   - CryoSleep별 이송율
-   - Deck별 이송율
-   - 특징 중요도
-   - 혼동 행렬
-9. 평가
-   - Classification Report
+5. 특징 선택 및 모델 학습
+6. 예측 및 제출
+7. 시각화 및 이미지 생성
+8. 평가 (Classification Report)
+9. **시설 비용 변수 활용** (Feature Engineering 확장)
+   - TotalSpending, HasSpending 파생 변수
+   - CryoSleep 소비 패턴 가설 검증
+10. **모델 비교 실험** (5-Fold Stratified CV)
+    - Logistic Regression vs Random Forest vs XGBoost
+    - 기존 특징 vs 확장 특징 성능 비교
+11. 결과 요약 및 Kaggle 점수
 
 ## 이 분석 활용 방법
 
@@ -432,5 +461,5 @@ spaceship-titanic/
 
 ---
 
-**상태:** 완료 - Kaggle 제출 완료
-**최종 업데이트:** 2026-01-13
+**상태:** 완료 - 5-Fold CV 및 모델 비교 실험 추가, 시설 비용 특징 활용
+**최종 업데이트:** 2026-01-16
