@@ -110,6 +110,12 @@ Output (10 classes)
 | Test Accuracy | **91.84%** |
 | Device | MPS (Apple Silicon GPU) |
 
+#### 학습 곡선
+![학습 곡선](images/learning_curves.png)
+
+#### 혼동 행렬
+![혼동 행렬](images/confusion_matrix.png)
+
 ---
 
 ## 5. 회고 및 개선 방향 (Retrospective)
