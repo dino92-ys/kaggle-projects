@@ -25,6 +25,7 @@
 
 ## 폴더 구조
 
+'''
 kaggle-projects/
 ├── README.md (현재 파일)
 ├── titanic/
@@ -42,6 +43,7 @@ kaggle-projects/
 └── fashion-mnist/
     ├── README.md
     └── fashion_mnist_cnn.ipynb
+'''
 
 ## 주요 접근 방식
 
